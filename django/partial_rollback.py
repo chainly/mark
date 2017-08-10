@@ -11,7 +11,7 @@ from django.db import transaction
 from django.http import HttpResponse,HttpResponseBadRequest,JsonResponse,HttpResponseServerError,HttpResponseForbidden
 from eam.models import Test
 @transaction.atomic
-def test(req):
+def test(req, tid=None):
     first_one = None
     try:
         first_one = Test.objects.filter()[0]
@@ -47,7 +47,7 @@ def bar():
 # we can only transaction.savepoint_rollback(sid1) to save partly
 # transaction.savepoint_commit(sp1) ==> save if no error in transaction.atomic, and no rollback any more
 @transaction.atomic
-def test(req):
+def test(req, tid=None):
     # if want to rollback partly , we can use this
     #with transaction.atomic():
 
@@ -119,7 +119,9 @@ def test(req):
         raise Exception(first_one and first_one.status)
         #print('a')
     except:
-        transaction.savepoint_rollback(sp1)
+        # OperationalError: (1305, 'SAVEPOINT s139991688427264_x1 does not exist')
+        #transaction.savepoint_rollback(sp1)
+        transaction.savepoint_rollback(sp2)
         return HttpResponse(first_one and first_one.status)
     else:
         transaction.savepoint_commit(sp3)
@@ -127,3 +129,44 @@ def test(req):
     # only Exceptions cause rollback, not HttpCode
     return HttpResponseForbidden(first_one and first_one.status)
     return HttpResponse(first_one and first_one.status)
+
+
+import time
+
+def test(req, tid=None):
+    # https://docs.djangoproject.com/en/1.10/ref/models/querysets/#select-for-update
+    """
+    - Currently, the postgresql, oracle, and mysql database backends support select_for_update(). 
+     However, MySQL has no support for the nowait argument. 
+    - select_for_update() normally fails in autocommit mode
+     you should use TransactionTestCase.
+    - if another transaction has already acquired a lock on one of the selected rows,
+     the query will block until the lock is released. 
+    - timeout required, innodb_lock_wait_timeout | task_timeout | proxy_read_timeout from http_server
+    """
+    start = time.time()
+    with transaction.atomic():
+        first_one = None
+        try:
+            if tid:
+                first_one = Test.objects.select_for_update(nowait=False).filter(id = tid)[0]
+            else:
+                first_one = Test.objects.select_for_update(nowait=False).filter()[0]
+        except IndexError:
+            first_one = Test.objects.create(id=tid, status=0)
+        finally:
+            mid = time.time()
+            first_one.status += 1
+            if not tid:
+                time.sleep(20)
+            first_one.save()
+        end = time.time()
+        """
+        cool@cool-pc:mysql$curl http://127.0.0.1:8000/test/
+        0.0245349407196 20.0191941261 98
+        cool@cool-pc:mysql$curl http://127.0.0.1:8000/test/3
+        0.0256159305573 0.000590085983276 1
+        cool@cool-pc:mysql$curl http://127.0.0.1:8000/test/1
+        8.2829811573 0.00146794319153 99cool@cool-pc:mysql$
+        """
+        return HttpResponse((mid - start, ' ',end - mid, ' ',first_one.status))
