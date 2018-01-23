@@ -2,7 +2,7 @@
   , but client can send data(GET / ...) and server blocked at socket.recv(),
   then rest/final good!!!, no firewall!, see: [server_packages_capture](./aaa)).Still unkown!!!
 
-2. `msg` is overwrite when `Exception` occurred, and delete when get out of `except` block
+2. `msg` is overwrite when `Exception` occurred, and delete after getting out of `except` block
 ```
 # python3
 msg = 'sdfsdf'
