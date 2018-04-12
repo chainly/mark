@@ -1,7 +1,8 @@
 ## inlineCallbacks
-> ---------------------> return
-> ---              ----> return
->    ----reactor---
+> ---------------------> return  
+ ----　　　　　　　----> return  
+ 　　----reactor---
+
   return _inlineCallbacks(None, gen, Deferred())
 ### _inlineCallbacks
     while True:
