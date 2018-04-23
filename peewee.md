@@ -142,4 +142,22 @@ except Exception as err:
     print(err)
 else:    
     print(a._data)
+    
+# more commonly
+def reconnect_database_when_interface_error():
+  # find used db, close and get new connection
+  exc_info = sys.exc_info()
+  if isinstance(exc_info[1], InterfaceError):
+      tp = exc_info[2].tb_next
+      while tp:
+          if 'self' in tp.tb_frame.f_locals:
+              c = tp.tb_frame.f_locals["self"]
+              if isinstance(c, peewee.MySQLDatabase):
+                  if c.is_closed():
+                      c.get_conn()
+                  else:
+                      c.close()
+                      c.get_conn()
+                  break
+          tp = tp.tb_next
 ```
