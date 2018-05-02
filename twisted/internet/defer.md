@@ -35,6 +35,40 @@
             waiting[0] = False
             return deferred
 
+### _inlineCallbacks.cancel and cron jobs
+
+    import time
+    @defer.inlineCallbacks
+    def gg():
+        n = 0
+        # _inlineCallbacks's deferred havn't use cancel
+        #def cancel(df):
+            #print(df, 'camcel!')
+            #df._suppressAlreadyCalled = True
+            #return df        
+
+        def do_add(r):
+            #n += 1
+            print(time.time(), n)
+            r = repr(r) if isinstance(r, failure.Failure) else r  # else get Unhandled error in Deferred: CancelledError
+            return r
+        while True:
+            print(time.time(), n)
+            n += 1
+            d = defer.Deferred(canceller=cancel)
+            d.debug = True
+            d.addBoth(do_add)
+            reactor.callLater(5, d.callback, 111)
+            try:
+                r = yield d
+            except Exception as err:
+                print('11111', err)
+    d = gg()
+    d.addBoth(lambda r : print(repr(r)))
+    reactor.addSystemEventTrigger('before', 'shutdown', d.cancel)
+    reactor.run()
+    print('11', d.result, d.callbacks)
+
 
 ## Deferred
     d = Deferred()
