@@ -62,6 +62,8 @@
         # here we need to callback or done by d.cancel with 
         # self.errback(failure.Failure(CancelledError()))
         df.errback(failure.Failure(defer.CancelledError('cancelled!')))
+        # you can set it True equal to defer.Deferred(canceller=None), no AlreadyCalledError raise
+        df._suppressAlreadyCalled = True
         return df
 
     def errback(r):
