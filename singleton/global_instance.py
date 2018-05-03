@@ -4,7 +4,7 @@ class _Spam:
     def __init__(self):
         print('Creating Spam')
 
-_spam_instance = None
+_spam_instance = None  # or just import it like `scrapy.signals.*_*`
 def Spam():
     global _spam_instance
     if _spam_instance is not None:
