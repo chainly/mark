@@ -28,10 +28,9 @@ def delete_core_params_table(self):
    _min = 0
    _max = 10000
    for i in range(100000000000):
-       r = ScrapyAdmobCoreParams.delete().where(ScrapyAdmobCoreParams.id > _min, ScrapyAdmobCoreParams.id < _max ).execute()
+       r = ScrapyAdmobCoreParams.delete().where(ScrapyAdmobCoreParams.id >= _min, ScrapyAdmobCoreParams.id <= _min+_max ).execute()
        if not r:
            break
        _min += _max
-       _max += _max
 
  ```
