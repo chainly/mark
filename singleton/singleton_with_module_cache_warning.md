@@ -9,7 +9,7 @@ print(id(yy), sys.modules.get('pp.xx'))
 
 from xx import yy
 print(id(yy), sys.modules.get('xx'))
-from .. import yy
+from .xx import yy
 print(id(yy), sys.modules.get('xx'))
 
 # *they are different, as use different cache!*
