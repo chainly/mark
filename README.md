@@ -4,7 +4,8 @@ mark for something
  ```
 # compare string, specially when compare from `sys.argv`
 '7777' < '100000'  # False
- 
+
+# 使用peewee迁移变换数据大概199002/h
 # 数据库清表操作
 # select * from information_schema.innodb_trx where trx_id=27989211459;
 """
