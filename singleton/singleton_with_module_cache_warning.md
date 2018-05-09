@@ -17,4 +17,7 @@ print(id(yy), sys.modules.get('xx'))
 # why
 # ref: https://docs.python.org/3/reference/import.html#the-module-cache
 
+# solution for scrapy.signal
+# - register all
+# - use absolutely import 
 ```
