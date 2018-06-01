@@ -33,3 +33,20 @@ if __name__ == '__main__':
     l = multiprocessing.get_logger()
     l.setLevel(logging.DEBUG)
     main()
+
+    
+
+####
+# https://docs.python.org/3/library/multiprocessing.html#all-start-methods
+# Joining processes that use queues
+from multiprocessing import Process, Queue
+
+def f(q):
+    q.put('X' * 1000000)  # > queue._maxsize = 32767
+
+if __name__ == '__main__':
+    queue = Queue()
+    p = Process(target=f, args=(queue,))
+    p.start()
+    p.join()                    # this deadlocks
+    obj = queue.get()
