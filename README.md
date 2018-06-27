@@ -35,3 +35,32 @@ def delete_core_params_table(self):
        _min += _max
 
  ```
+
+## namespace overwrite err, python2 vs python3
+```
+# python3
+a = 'df'
+try:
+    0/0
+except Exception as a:
+    pass
+print(a)
+Traceback (most recent call last):
+  File "/Users/chengcong/anaconda/envs/python36/lib/python3.6/site-packages/IPython/core/interactiveshell.py", line 2910, in run_code
+    exec(code_obj, self.user_global_ns, self.user_ns)
+  File "<ipython-input-8-d091c601acb7>", line 5, in <module>
+    print(a)
+NameError: name 'a' is not defined
+```
+
+```
+In [3]: a = 'dfs'
+
+In [4]: try:
+   ...:     0/0
+   ...: except Exception as a:
+   ...:     pass
+   ...: print(a)
+   ...:
+integer division or modulo by zero
+```
