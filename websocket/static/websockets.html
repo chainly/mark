@@ -1,0 +1,43 @@
+<title>Tornado WebSockets</title>
+
+<input type="button" onclick="openWS();" value="open">
+<br></br>
+
+<strong>Message to Send:</strong>
+<input type="text" id="send" maxlength="25">
+<input type="button" onclick="sendMsg(this.previousElementSibling.value);" value="Send">
+<input type="button" onclick="sendMsg('\x03');" value="CtrC">
+
+<br></br>
+<strong>Message recieved:</strong>
+<textarea type="text" id="msg" rows="15" cols="100"></textarea>
+
+
+<script type="text/javascript">
+  // http://www.blue-zero.com/WebSocket/; 
+
+  var ws = undefined;
+  function openWS() {
+       if ("WebSocket" in window) {
+         if (typeof(ws) == "undefined"){
+             ws = new WebSocket("ws://" + window.location.host + "/ws");
+          };
+         ws.onopen = function() {
+            <!--ws.send(msg);-->
+            document.getElementById('msg').value += 'opend!\n';
+         };
+         ws.onmessage = function (evt) {
+            document.getElementById('msg').value += evt.data;
+         };
+   
+      }  
+  }
+  function sendMsg(msg) {
+      if (typeof(ws) == "undefined"){
+        alert('open required!');
+        return false;
+         };
+       ws.send(msg);
+      }
+
+</script>
